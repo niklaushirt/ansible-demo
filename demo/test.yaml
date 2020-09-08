@@ -3,22 +3,8 @@
 - name: Ping 
   hosts: all 
   tasks:
-    - name: Get the service object
-      manageiq_vmdb:
-        href: "{{ manageiq.service }}"
-      register: service
-
-    - name: Get the VM object
-      manageiq_vmdb:
-        href: "vms/18"
-      register: vm
-
-    - name: Add the VM to the service
-      manageiq_vmdb:
-        vmdb: "{{ service }}"
-        action: add_resource
-        data:
-          resource:
-            href: "{{ vm.href }}"
+    - name: Print the service details
+      debug:
+        msg: "Services object is {{ service }}"
 
 
