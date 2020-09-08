@@ -1,0 +1,24 @@
+---
+# This playbook uses the win_ping module to test connectivity to Windows hosts
+- name: Ping 
+  hosts: all 
+  tasks:
+    - name: Get the service object
+      manageiq_vmdb:
+        href: "{{ manageiq.service }}"
+      register: service
+
+    - name: Get the VM object
+      manageiq_vmdb:
+        href: "vms/18"
+      register: vm
+
+    - name: Add the VM to the service
+      manageiq_vmdb:
+        vmdb: "{{ service }}"
+        action: add_resource
+        data:
+          resource:
+            href: "{{ vm.href }}"
+
+
