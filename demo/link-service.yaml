@@ -1,0 +1,32 @@
+- name: Create Ec2 Instance
+  ec2:
+    key_name: "{{ key }}"
+    instance_tags: {Name: "{{ name }}"}
+    group_id: "{{ security_group }}"
+    instance_type: "{{ instance_type }}"
+    region: "{{ region }}"
+    image: "{{ image }}"
+    wait: yes
+    count: 1
+    vpc_subnet_id: "{{ subnet }}"
+    assign_public_ip: yes
+  register: ec2
+- name: Service Linking via an href slug
+  manageiq_vmdb:
+    href: "href_slug::services/80"
+    action: add_provider_vms
+    data:
+      uid_ems:
+        - "{{ ec2.instances[0].id }}"
+      provider:
+        id: 24
+
+- name: Service Linking via an object
+  manageiq_vmdb:
+    vmdb: "{{ vmdb_object }}"
+    action: add_provider_vms
+    data:
+      uid_ems:
+        - "{{ ec2.instances[0].id }}"
+      provider:
+        id: 24
