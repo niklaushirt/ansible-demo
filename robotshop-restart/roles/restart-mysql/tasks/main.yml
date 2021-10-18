@@ -1,3 +1,8 @@
-- name: Delete Ratings Pod
-  shell: kubectl delete pod -n robot-shop $(kubectl get po -n robot-shop|grep ratings |awk '{print$1}') --force --grace-period=0
-  register: kubectl_get_pods
+- name: Scale deployment up, and extend timeout
+  community.kubernetes.k8s_scale:
+    api_version: v1
+    kind: Deployment
+    name: ratings
+    namespace: robot-shop
+    replicas: 0
+    wait_timeout: 60
