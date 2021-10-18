@@ -1,1 +1,3 @@
-- src: community.kubernetes.k8s_scale
+collections:
+  - name: community.kubernetes
+    version: 2.0.0
