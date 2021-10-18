@@ -3,6 +3,6 @@
 
 
 - name: Delete Mysql Pod
-  shell: oc delete pod -n robot-shop $(oc get po -n robot-shop|grep mysql |awk '{print$1}') --force --grace-period=0
+  shell: kubectl delete pod -n robot-shop $(oc get po -n robot-shop|grep mysql |awk '{print$1}') --force --grace-period=0
   register: kubectl_get_pods
 
