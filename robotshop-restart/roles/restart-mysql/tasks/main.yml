@@ -1,22 +1,8 @@
----
-
-- name: Install kubectl
-  shell: |
-    wget https://github.com/openshift/okd/releases/download/4.7.0-0.okd-2021-07-03-190901/openshift-client-linux-4.7.0-0.okd-2021-07-03-190901.tar.gz -O oc.tar.gz
-    tar xfzv oc.tar.gz
-    sudo mv oc /usr/local/bin
-    sudo mv kubectl /usr/local/bin
-    rm oc.tar.gz
-    rm README.md
-  register: kubectl_get_pods
-
-
-
-
-
-
-
-- name: Delete Mysql Pod
-  shell: oc delete pod -n robot-shop $(oc get po -n robot-shop|grep mysql |awk '{print$1}') --force --grace-period=0
-  register: kubectl_get_pods
-
+- name: Scale deployment up, and extend timeout
+  community.kubernetes.k8s_scale:
+    api_version: v1
+    kind: Deployment
+    name: ratings
+    namespace: robot-shop
+    replicas: 0
+    wait_timeout: 60
