@@ -11,19 +11,6 @@
         var: k8s_apikey
 
 
-    # Previous task provides the token/api_key, while all other parameters
-    # are taken from module_defaults
-    - name: Get a list of all pods from any namespace
-      k8s_info:
-        host: "{{k8s_apiurl}}"
-        api_key: "{{k8s_apikey}}"
-        kind: Pod
-        namespace: robot-shop
-      register: pod_list
-    - name: DEBUG -                 🟢 Output
-      debug: 
-        msg: "pod_list: {{ pod_list | json_query('resources[*].metadata.name')  }} "
-
 
     - name: Scale ratings deployment to 1
       kubernetes.core.k8s_scale:
