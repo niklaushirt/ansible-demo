@@ -22,7 +22,7 @@
       register: pod_list
     - name: DEBUG -                 🟢 Output
       debug: 
-        var: pod_list
+        msg: "pod_list: {{ pod_list | json_query('resources[*].metadata.name')  }} "
 
 
     - name: Scale ratings deployment to 1
