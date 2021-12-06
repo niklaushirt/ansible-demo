@@ -4,4 +4,4 @@
 - hosts: localhost
 
   roles:
-    - restart-mysql
+    - stop-ratings

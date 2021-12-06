@@ -1,0 +1,13 @@
+- name: Scale ratings deployment to 0
+  kubernetes.core.k8s_scale:
+    api_version: v1
+    kind: Deployment
+    name: ratings
+    namespace: robot-shop
+    replicas: 0
+    wait_timeout: 60
+- name: Delete Ratings Pod
+  shell: oc delete pod -n robot-shop $(oc get po -n robot-shop|grep ratings |awk '{print$1}') --force --grace-period=0
+  register: kubectl_get_pods
+
+

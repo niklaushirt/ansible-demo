@@ -1,8 +1,8 @@
-- name: Scale deployment up, and extend timeout
+- name: Scale ratings deployment to 1
   kubernetes.core.k8s_scale:
     api_version: v1
     kind: Deployment
     name: ratings
     namespace: robot-shop
-    replicas: 0
+    replicas: 1
     wait_timeout: 60
