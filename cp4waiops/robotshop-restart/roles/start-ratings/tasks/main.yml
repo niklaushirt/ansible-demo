@@ -22,3 +22,5 @@
         namespace: robot-shop
         replicas: 1
         wait_timeout: 60
+        validate_certs: no
+        
