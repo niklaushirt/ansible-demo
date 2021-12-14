@@ -9,7 +9,9 @@
     - name: k8s_apiurl
       set_fact:
         k8s_apiurl: "{{my_k8s_apiurl}}"
-
+    - name: validate_certs
+      set_fact:
+        validate_certs: "no"
 
   roles:
     - stop-ratings
