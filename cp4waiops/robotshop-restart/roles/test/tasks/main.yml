@@ -9,5 +9,5 @@
 
 - name: DEBUG -                 🟢 NODES
   debug: 
-    var: nodes
+    var: nodes.stdout_lines
       
