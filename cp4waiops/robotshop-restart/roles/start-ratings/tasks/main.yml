@@ -11,16 +11,18 @@
         var: k8s_apikey
 
 
+    - name: Mitigate MYSQL Problem
+      shell: |
+        export WAIOPS_NAMESPACE=$(oc get po -A|grep aiops-orchestrator-controller |awk '{print$1}')
+        oc patch service mysql -n robot-shop --patch '{"spec": {"selector": {"service": "mysql"}}}'
+      ignore_errors: yes
 
-    - name: Scale ratings deployment to 1
-      kubernetes.core.k8s_scale:
-        host: "{{k8s_apiurl}}"
-        api_key: "{{k8s_apikey}}"
-        api_version: v1
-        kind: Deployment
-        name: ratings
-        namespace: robot-shop
-        replicas: 1
-        wait_timeout: 60
-        validate_certs: no
-        
+    - name: Incrase MYSQL Memory
+      shell: |
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------" >> ../installAIManager.log
+      ignore_errors: yes
+
+    - name: Update GIT Commit
+      shell: |
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------" >> ../installAIManager.log
+      ignore_errors: yes
