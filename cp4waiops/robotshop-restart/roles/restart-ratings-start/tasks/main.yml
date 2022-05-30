@@ -1,0 +1,18 @@
+
+  - block:
+ 
+    - name: DEBUG -                 🟢 API URL
+      debug: 
+        var: k8s_apiurl
+
+
+    - name: DEBUG -                 🟢 API KEY
+      debug: 
+        var: k8s_apikey
+
+
+    - name: Start Ratings
+      shell: |
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+      ignore_errors: yes
+
