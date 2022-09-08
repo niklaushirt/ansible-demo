@@ -10,6 +10,11 @@
       debug: 
         var: k8s_apikey
 
+    - name: OCP Login
+      shell: |
+        oc login --token={{ my_k8s_apikey }} --server={{ my_k8s_apiurl }}
+      ignore_errors: yes
+
 
     - name: Mitigate MYSQL Problem
       shell: |
