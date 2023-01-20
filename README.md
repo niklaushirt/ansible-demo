@@ -11,3 +11,4 @@ you have to:
 * Import the Git repository https://github.com/niklaushirt/ansible-demo
 * Create Template "TomcatNKD" with Playbook  "tomcat-standalone-no-fw/site.yml"
 * Create Template "Tomcat" with Playbook  "tomcat-standalone/site.yml"
+ 
