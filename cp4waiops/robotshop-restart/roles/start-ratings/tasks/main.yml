@@ -16,7 +16,7 @@
       ignore_errors: yes
 
 
-    - name: Mitigate MYSQL Problem
+    - name: Mitigate MYSQL Problem (NEW)
       shell: |
         export WAIOPS_NAMESPACE=$(oc get po -A|grep aiops-orchestrator-controller |awk '{print$1}')
         oc patch service mysql -n robot-shop --patch '{"spec": {"selector": {"service": "mysql"}}}'

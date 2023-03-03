@@ -13,14 +13,14 @@
     - name: OCP Login
       shell: |
         oc login --token={{ my_k8s_apikey }} --server={{ my_k8s_apiurl }} --insecure-skip-tls-verify
-        oc set env deployment ratings -n robot-shop PDO_URL="mysql:host=mysql;dbname=ratings-dev;charset=utf8mb4"
-        oc set env deployment load -n robot-shop ERROR=1
 
       ignore_errors: yes
 
-    - name: Create MYSQL Problem
+    - name: Create MYSQL Problem (NEW)
       shell: |
         export WAIOPS_NAMESPACE=$(oc get po -A|grep aiops-orchestrator-controller |awk '{print$1}')
-        oc patch service mysql -n robot-shop --patch '{"spec": {"selector": {"service": "mysql-outage"}}}'
+        oc set env deployment ratings -n robot-shop PDO_URL="mysql:host=mysql;dbname=ratings-dev;charset=utf8mb4"
+        oc set env deployment load -n robot-shop ERROR=1
+
       ignore_errors: yes
 
