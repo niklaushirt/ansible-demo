@@ -18,8 +18,7 @@
 
     - name: Mitigate Sockshop Catalogue Problem
       shell: |
-        oc patch service catalogue -n sock-shop --patch "{\\"spec\\": {\\"selector\\": {\\"service\\": \\"catalog\\"}}}"        
-
+        oc patch service catalogue -n sock-shop --patch '{"spec": {"selector": {"service": "catalog"}}}'
       ignore_errors: yes
 
     - name: Reboot Network Switch
