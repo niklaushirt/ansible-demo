@@ -1,0 +1,25 @@
+
+  - block:
+ 
+    - name: DEBUG -                 🟢 API URL
+      debug: 
+        var: k8s_apiurl
+
+
+    - name: DEBUG -                 🟢 API KEY
+      debug: 
+        var: k8s_apikey
+
+
+
+    - name: Scale ratings deployment to 0
+      kubernetes.core.k8s_scale:
+        host: "{{k8s_apiurl}}"
+        api_key: "{{k8s_apikey}}"
+        api_version: v1
+        kind: Deployment
+        name: ratings
+        namespace: robot-shop
+        replicas: 0
+        wait_timeout: 60
+        validate_certs: no

@@ -1,0 +1,28 @@
+
+  - block:
+ 
+    - name: DEBUG -                 🟢 API URL
+      debug: 
+        var: k8s_apiurl
+
+
+    - name: DEBUG -                 🟢 API KEY
+      debug: 
+        var: k8s_apikey
+
+    - name: OCP Login
+      shell: |
+        oc login --token={{ my_k8s_apikey }} --server={{ my_k8s_apiurl }} --insecure-skip-tls-verify
+      ignore_errors: yes
+
+
+    - name: Mitigate Sockshop Catalogue Problem
+      shell: |
+        oc patch service catalogue -n sock-shop --patch '{"spec": {"selector": {"name": "catalog"}}}'
+      ignore_errors: yes
+
+    - name: Reboot Network Switch
+      shell: |
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+      ignore_errors: yes
+

@@ -1,0 +1,38 @@
+
+  - block:
+ 
+    - name: DEBUG -                 🟢 API URL
+      debug: 
+        var: k8s_apiurl
+
+
+    - name: DEBUG -                 🟢 API KEY
+      debug: 
+        var: k8s_apikey
+
+    - name: OCP Login
+      shell: |
+        oc login --token={{ my_k8s_apikey }} --server={{ my_k8s_apiurl }} --insecure-skip-tls-verify
+      ignore_errors: yes
+
+
+    - name: Mitigate MYSQL Problem (NEW)
+      shell: |
+        export WAIOPS_NAMESPACE=$(oc get po -A|grep aiops-orchestrator-controller |awk '{print$1}')
+        oc patch service mysql -n robot-shop --patch '{"spec": {"selector": {"service": "mysql"}}}'
+        oc set env deployment ratings -n robot-shop PDO_URL-
+        oc set env deployment load -n robot-shop ERROR=0
+        oc delete pod $(oc get po -n robot-shop|grep shipping|awk '{print$1}') -n robot-shop --ignore-not-found
+        
+
+      ignore_errors: yes
+
+    - name: Incrase MYSQL Memory
+      shell: |
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+      ignore_errors: yes
+
+    - name: Rollback GIT Commit
+      shell: |
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+      ignore_errors: yes

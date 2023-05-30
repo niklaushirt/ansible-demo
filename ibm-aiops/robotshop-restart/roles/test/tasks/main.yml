@@ -1,0 +1,13 @@
+
+
+- name: TEST -           🚀 Get Nodes
+  shell: |
+    oc get nodes
+  register: nodes
+  ignore_errors: yes
+
+
+- name: DEBUG -                 🟢 NODES
+  debug: 
+    var: nodes.stdout_lines
+      
