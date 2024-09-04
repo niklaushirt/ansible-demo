@@ -1,0 +1,49 @@
+
+  - block:
+ 
+    - name: DEBUG -                 🟢 API URL
+      debug: 
+        var: k8s_apiurl
+
+
+    - name: DEBUG -                 🟢 API KEY
+      debug: 
+        var: k8s_apikey
+
+    - name: OCP Login
+      shell: |
+        oc login --token={{ my_k8s_apikey }} --server={{ my_k8s_apiurl }} --insecure-skip-tls-verify
+      ignore_errors: yes
+
+
+    - name: Reset Fiber Uplink
+      shell: |
+        export AIOPS_NAMESPACE=$(oc get po -A|grep aiops-orchestrator-controller |awk '{print$1}')
+        export TOPO_REST_USR=$(oc get secret aiops-topology-asm-credentials -n $AIOPS_NAMESPACE -o jsonpath='{.data.username}' | base64 --decode)
+        export TOPO_REST_PWD=$(oc get secret aiops-topology-asm-credentials -n $AIOPS_NAMESPACE -o jsonpath='{.data.password}' | base64 --decode)
+        export TOPO_MGT_ROUTE="https://"$(oc get route -n $AIOPS_NAMESPACE aiops-topology-topology -o jsonpath={.spec.host})
+        export LOGIN="$TOPO_REST_USR:$TOPO_REST_PWD"
+
+        echo "    URL: $TOPO_MGT_ROUTE/1.0/rest-observer/rest/resources"
+        echo "    LOGIN: $LOGIN"
+
+        export OBJ_ID=$(curl -k -s -X "GET" "$TOPO_MGT_ROUTE/1.0/topology/resources?_filter=name%3Dfrapod01&_filter=entityTypes%3DfiberConnection&_field=uniqueId&_include_global_resources=false&_include_count=false&_include_status=false&_include_status_severity=false&_include_metadata=false&_return_composites=false" --insecure -u $LOGIN -H 'Content-Type: application/json' -H 'X-TenantID: cfd95b7e-3bc7-4006-a4a8-a73a79c71255'|jq -r -c '._items[]|._id'| tail -1)
+        echo $OBJ_ID
+        echo "    OBJ_ID: $OBJ_ID"
+
+        export result=$(curl -k -s -X "POST" "$TOPO_MGT_ROUTE/1.0/topology/resources/$OBJ_ID" --insecure -u $LOGIN -H 'Content-Type: application/json' -H 'X-TenantID: cfd95b7e-3bc7-4006-a4a8-a73a79c71255' -d '{"availability": "test"}')
+        echo "    result: $result"
+
+
+        export OBJ_ID=$(curl -k -s -X "GET" "$TOPO_MGT_ROUTE/1.0/topology/resources?_filter=name%3Dbepod01&_filter=entityTypes%3DfiberConnection&_field=uniqueId&_include_global_resources=false&_include_count=false&_include_status=false&_include_status_severity=false&_include_metadata=false&_return_composites=false" --insecure -u $LOGIN -H 'Content-Type: application/json' -H 'X-TenantID: cfd95b7e-3bc7-4006-a4a8-a73a79c71255'|jq -r -c '._items[]|._id'| tail -1)
+        echo $OBJ_ID
+        echo "    OBJ_ID: $OBJ_ID"
+
+        export result=$(curl -k -s -X "POST" "$TOPO_MGT_ROUTE/1.0/topology/resources/$OBJ_ID" --insecure -u $LOGIN -H 'Content-Type: application/json' -H 'X-TenantID: cfd95b7e-3bc7-4006-a4a8-a73a79c71255' -d '{"availability": "test"}')
+        echo "    result: $result"
+
+ 
+
+      ignore_errors: yes
+
+
