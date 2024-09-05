@@ -74,6 +74,9 @@
         export TOPO_MGT_ROUTE="https://"$(oc get route -n $AIOPS_NAMESPACE topology-manage -o jsonpath={.spec.host})
         export LOGIN="$TOPO_REST_USR:$TOPO_REST_PWD"
 
+        echo "    URL: $TOPO_MGT_ROUTE/1.0/rest-observer/rest/resources"
+        echo "    LOGIN: $LOGIN"
+
 
         echo ""
         echo "   ----------------------------------------------------------------------------------------------------------"
@@ -88,6 +91,22 @@
         export result=$(curl -X "POST" "$TOPO_MGT_ROUTE/1.0/topology/resources/$MYSQL_ID" --insecure -u $LOGIN -H 'Content-Type: application/json' -H 'X-TenantID: cfd95b7e-3bc7-4006-a4a8-a73a79c71255' -d '{"innodb_buffer_pool_size": "8GB"}')
         echo $result
 
+
+
+        export OBJ_ID=$(curl -k -s -X "GET" "$TOPO_MGT_ROUTE/1.0/topology/resources?_filter=name%3Dfrapod01&_filter=entityTypes%3DfiberConnection&_field=uniqueId&_include_global_resources=false&_include_count=false&_include_status=false&_include_status_severity=false&_include_metadata=false&_return_composites=false" --insecure -u $LOGIN -H 'Content-Type: application/json' -H 'X-TenantID: cfd95b7e-3bc7-4006-a4a8-a73a79c71255'|jq -r -c '._items[]|._id'| tail -1)
+        echo $OBJ_ID
+        echo "    OBJ_ID: $OBJ_ID"
+
+        export result=$(curl -k -s -X "POST" "$TOPO_MGT_ROUTE/1.0/topology/resources/$OBJ_ID" --insecure -u $LOGIN -H 'Content-Type: application/json' -H 'X-TenantID: cfd95b7e-3bc7-4006-a4a8-a73a79c71255' -d '{"availability": "OK"}')
+        echo "    result: $result"
+
+
+        export OBJ_ID=$(curl -k -s -X "GET" "$TOPO_MGT_ROUTE/1.0/topology/resources?_filter=name%3Dbepod01&_filter=entityTypes%3DfiberConnection&_field=uniqueId&_include_global_resources=false&_include_count=false&_include_status=false&_include_status_severity=false&_include_metadata=false&_return_composites=false" --insecure -u $LOGIN -H 'Content-Type: application/json' -H 'X-TenantID: cfd95b7e-3bc7-4006-a4a8-a73a79c71255'|jq -r -c '._items[]|._id'| tail -1)
+        echo $OBJ_ID
+        echo "    OBJ_ID: $OBJ_ID"
+
+        export result=$(curl -k -s -X "POST" "$TOPO_MGT_ROUTE/1.0/topology/resources/$OBJ_ID" --insecure -u $LOGIN -H 'Content-Type: application/json' -H 'X-TenantID: cfd95b7e-3bc7-4006-a4a8-a73a79c71255' -d '{"availability": "OK"}')
+        echo "    result: $result"
 
         echo ""
         echo ""
