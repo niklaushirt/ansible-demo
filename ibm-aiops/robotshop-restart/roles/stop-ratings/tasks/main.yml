@@ -13,8 +13,14 @@
     - name: OCP Login
       shell: |
         oc login --token={{ my_k8s_apikey }} --server={{ my_k8s_apiurl }} --insecure-skip-tls-verify
+      ignore_errors: true
+      register: EXEC_RESULT
+    - name: 🟣  OUTPUT - OCP Login
+      debug: 
+        var: EXEC_RESULT.stdout_lines
+        #verbosity: 1
 
-      ignore_errors: yes
+
 
     - name: Create MYSQL Problem (NEW)
       shell: |
@@ -28,7 +34,7 @@
         oc set env deployment ratings -n robot-shop PDO_URL="mysql:host=mysql;dbname=ratings-dev;charset=utf8mb4"
         oc set env deployment load -n robot-shop ERROR=1
 
-        
+
         echo ""
         echo ""
         echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
@@ -37,7 +43,13 @@
         echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
 
 
-      ignore_errors: yes
+      ignore_errors: true
+      register: EXEC_RESULT
+    - name: 🟣  OUTPUT - Create MYSQL Problem
+      debug: 
+        var: EXEC_RESULT.stdout_lines
+        #verbosity: 1
+
 
 
 

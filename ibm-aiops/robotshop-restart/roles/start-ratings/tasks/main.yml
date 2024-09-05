@@ -13,7 +13,12 @@
     - name: OCP Login
       shell: |
         oc login --token={{ my_k8s_apikey }} --server={{ my_k8s_apiurl }} --insecure-skip-tls-verify
-      ignore_errors: yes
+      ignore_errors: true
+      register: EXEC_RESULT
+    - name: 🟣  OUTPUT - OCP Login
+      debug: 
+        var: EXEC_RESULT.stdout_lines
+        #verbosity: 1
 
 
     - name: Mitigate MYSQL Problem (NEW)
@@ -38,9 +43,16 @@
         echo " ✅ Mitigate MYSQL Problem - DONE"
         echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
         echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+      ignore_errors: true
+      register: EXEC_RESULT
+    - name: 🟣  OUTPUT - Mitigate MYSQL Problem
+      debug: 
+        var: EXEC_RESULT.stdout_lines
+        #verbosity: 1
 
 
-      ignore_errors: yes
+
+
 
     - name: Increase MYSQL Memory (NEW)
       shell: |
@@ -86,7 +98,13 @@
 
     
 
-      ignore_errors: yes
+      ignore_errors: true
+      register: EXEC_RESULT
+    - name: 🟣  OUTPUT - Increase MYSQL Memory
+      debug: 
+        var: EXEC_RESULT.stdout_lines
+        #verbosity: 1
+
 
     - name: Rollback GIT Commit
       shell: |
