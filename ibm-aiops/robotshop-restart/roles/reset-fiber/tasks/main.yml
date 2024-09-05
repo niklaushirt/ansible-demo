@@ -18,11 +18,30 @@
 
     - name: Reset Fiber Uplink
       shell: |
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo " 🚀 Reset Fiber Uplink"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo ""
+        echo ""
+
+
+
+        echo "   ----------------------------------------------------------------------------------------------------------"
+        echo "    🛠️ Initialize"
+        echo "   ----------------------------------------------------------------------------------------------------------"
         export AIOPS_NAMESPACE=$(oc get po -A|grep aiops-orchestrator-controller |awk '{print$1}')
         export TOPO_REST_USR=$(oc get secret aiops-topology-asm-credentials -n $AIOPS_NAMESPACE -o jsonpath='{.data.username}' | base64 --decode)
         export TOPO_REST_PWD=$(oc get secret aiops-topology-asm-credentials -n $AIOPS_NAMESPACE -o jsonpath='{.data.password}' | base64 --decode)
         export TOPO_MGT_ROUTE="https://"$(oc get route -n $AIOPS_NAMESPACE aiops-topology-topology -o jsonpath={.spec.host})
         export LOGIN="$TOPO_REST_USR:$TOPO_REST_PWD"
+
+
+
+        echo ""
+        echo "   ----------------------------------------------------------------------------------------------------------"
+        echo "    ♻️ Reset Fiber Uplink between Bern (CH) and Frankfurt (DE)"
+        echo "   ----------------------------------------------------------------------------------------------------------"
 
         echo "    URL: $TOPO_MGT_ROUTE/1.0/rest-observer/rest/resources"
         echo "    LOGIN: $LOGIN"
@@ -42,8 +61,60 @@
         export result=$(curl -k -s -X "POST" "$TOPO_MGT_ROUTE/1.0/topology/resources/$OBJ_ID" --insecure -u $LOGIN -H 'Content-Type: application/json' -H 'X-TenantID: cfd95b7e-3bc7-4006-a4a8-a73a79c71255' -d '{"availability": "OK"}')
         echo "    result: $result"
 
- 
+
+
+
+        echo ""
+        echo "   ----------------------------------------------------------------------------------------------------------"
+        echo "    📥 Restore Ratings Service"
+        echo "   ----------------------------------------------------------------------------------------------------------"
+        oc patch service mysql -n robot-shop --patch '{"spec": {"selector": {"service": "mysql"}}}'
+        oc set env deployment ratings -n robot-shop PDO_URL-
+        oc set env deployment load -n robot-shop ERROR=0
+        oc delete pod $(oc get po -n robot-shop|grep shipping|awk '{print$1}') -n robot-shop --ignore-not-found
+    
+        export MYSQL_ID=$(curl -X "GET" "$TOPO_MGT_ROUTE/1.0/topology/resources?_filter=name%3Dmysql&_filter=entityTypes%3Ddeployment&_field=uniqueId&_include_global_resources=false&_include_count=false&_include_status=false&_include_status_severity=false&_include_metadata=false&_return_composites=false" --insecure -u $LOGIN -H 'Content-Type: application/json' -H 'X-TenantID: cfd95b7e-3bc7-4006-a4a8-a73a79c71255'|jq -r -c '._items[]|._id'| tail -1)
+        echo $MYSQL_ID
+    
+        export result=$(curl -X "POST" "$TOPO_MGT_ROUTE/1.0/topology/resources/$MYSQL_ID" --insecure -u $LOGIN -H 'Content-Type: application/json' -H 'X-TenantID: cfd95b7e-3bc7-4006-a4a8-a73a79c71255' -d '{"innodb_buffer_pool_size": "8GB"}')
+        echo $result
+
+
+
+        echo ""
+        echo ""
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo " ✅ Reset Fiber Uplink - DONE"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
 
       ignore_errors: yes
 
 
+
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo " 🚀 Reset Fiber Uplink"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo ""
+        echo ""
+
+
+
+        echo "   ----------------------------------------------------------------------------------------------------------"
+        echo "    🛠️ Initialize"
+        echo "   ----------------------------------------------------------------------------------------------------------"
+
+
+        echo ""
+        echo "   ----------------------------------------------------------------------------------------------------------"
+        echo "    📥 Restore Ratings Service"
+        echo "   ----------------------------------------------------------------------------------------------------------"
+
+
+        echo ""
+        echo ""
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo " ✅ Reset Fiber Uplink - DONE"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"

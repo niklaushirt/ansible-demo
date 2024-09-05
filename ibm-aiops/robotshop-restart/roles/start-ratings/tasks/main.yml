@@ -18,28 +18,55 @@
 
     - name: Mitigate MYSQL Problem (NEW)
       shell: |
-        export WAIOPS_NAMESPACE=$(oc get po -A|grep aiops-orchestrator-controller |awk '{print$1}')
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo " 🚀  Mitigate MYSQL Problem"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo ""
+        echo ""
+
         oc patch service mysql -n robot-shop --patch '{"spec": {"selector": {"service": "mysql"}}}'
         oc set env deployment ratings -n robot-shop PDO_URL-
         oc set env deployment load -n robot-shop ERROR=0
         oc delete pod $(oc get po -n robot-shop|grep shipping|awk '{print$1}') -n robot-shop --ignore-not-found
-        
+
+
+
+        echo ""
+        echo ""
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo " ✅ Mitigate MYSQL Problem - DONE"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+
 
       ignore_errors: yes
 
-    - name: Incrase MYSQL Memory (NEW)
+    - name: Increase MYSQL Memory (NEW)
       shell: |
         echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
-        echo "----------------------------------------------------------------------------------------------------------"
-        echo "----------------------------------------------------------------------------------------------------------"
-        echo "🚀 Restore innodb_buffer_pool_size"
-        echo "----------------------------------------------------------------------------------------------------------"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo " 🚀 Increase MYSQL Memory"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo ""
+        echo ""
+
+
+
+        echo "   ----------------------------------------------------------------------------------------------------------"
+        echo "    🛠️ Initialize"
+        echo "   ----------------------------------------------------------------------------------------------------------"
         export AIOPS_NAMESPACE=$(oc get po -A|grep aiops-orchestrator-controller |awk '{print$1}')
         export TOPO_REST_USR=$(oc get secret aiops-topology-asm-credentials -n $AIOPS_NAMESPACE -o jsonpath='{.data.username}' | base64 --decode)
         export TOPO_REST_PWD=$(oc get secret aiops-topology-asm-credentials -n $AIOPS_NAMESPACE -o jsonpath='{.data.password}' | base64 --decode)
         export TOPO_MGT_ROUTE="https://"$(oc get route -n $AIOPS_NAMESPACE topology-manage -o jsonpath={.spec.host})
         export LOGIN="$TOPO_REST_USR:$TOPO_REST_PWD"
-    
+
+
+        echo ""
+        echo "   ----------------------------------------------------------------------------------------------------------"
+        echo "    📥 Restore innodb_buffer_pool_size"
+        echo "   ----------------------------------------------------------------------------------------------------------"
         echo "    URL: $TOPO_MGT_ROUTE/1.0/rest-observer/rest/resources"
         echo "    LOGIN: $LOGIN"
     
@@ -48,6 +75,16 @@
     
         export result=$(curl -X "POST" "$TOPO_MGT_ROUTE/1.0/topology/resources/$MYSQL_ID" --insecure -u $LOGIN -H 'Content-Type: application/json' -H 'X-TenantID: cfd95b7e-3bc7-4006-a4a8-a73a79c71255' -d '{"innodb_buffer_pool_size": "8GB"}')
         echo $result
+
+
+        echo ""
+        echo ""
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo " ✅ Increase MYSQL Memory - DONE"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+
+    
 
       ignore_errors: yes
 
