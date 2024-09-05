@@ -15,7 +15,7 @@
         oc login --token={{ my_k8s_apikey }} --server={{ my_k8s_apiurl }} --insecure-skip-tls-verify
       ignore_errors: true
       register: EXEC_RESULT
-    - name: 🟣  OUTPUT
+    - name: 🟣  OUTPUT - OCP Login
       debug: 
         var: EXEC_RESULT.stdout_lines
         #verbosity: 1
@@ -96,7 +96,7 @@
 
       ignore_errors: true
       register: EXEC_RESULT
-    - name: 🟣  OUTPUT
+    - name: 🟣  OUTPUT - Reset Fiber Uplink
       debug: 
         var: EXEC_RESULT.stdout_lines
         #verbosity: 1
