@@ -1,0 +1,77 @@
+
+  - block:
+ 
+    - name: DEBUG -                 🟢 API URL
+      debug: 
+        var: k8s_apiurl
+
+
+    - name: DEBUG -                 🟢 API KEY
+      debug: 
+        var: k8s_apikey
+
+    - name: OCP Login
+      shell: |
+        oc login --token={{ my_k8s_apikey }} --server={{ my_k8s_apiurl }} --insecure-skip-tls-verify
+      ignore_errors: true
+      register: EXEC_RESULT
+    - name: 🟣  OUTPUT - OCP Login
+      debug: 
+        var: EXEC_RESULT.stdout_lines
+        #verbosity: 1
+
+
+
+
+
+    - name: List Pods
+      shell: |
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo " 🚀 Check AIOPS and create Evnets"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo ""
+        echo ""
+
+
+
+        echo "   ----------------------------------------------------------------------------------------------------------"
+        echo "    🛠️ Initialize"
+        echo "   ----------------------------------------------------------------------------------------------------------"
+        export AIOPS_NAMESPACE=$(oc get po -A|grep aiops-orchestrator-controller |awk '{print$1}')
+        export LOGIN="$TOPO_REST_USR:$TOPO_REST_PWD"
+        echo "    URL: $TOPO_MGT_ROUTE/1.0/rest-observer/rest/resources"
+        echo "    LOGIN: $LOGIN"
+
+
+        echo ""
+        echo "   ----------------------------------------------------------------------------------------------------------"
+        echo "    📥 Check"
+        echo "   ----------------------------------------------------------------------------------------------------------"
+        export PODS_NOK=$(oc get pods -n ibm-aiops |grep -v Completed|grep -v Error|grep -v 1/1|grep -v 2/2)
+        echo "    PODS_NOK: $PODS_NOK"
+
+        export PODS_NOK_COUNT=$(oc get pods -n ibm-aiops |grep -v Completed|grep -v Error|grep -v 1/1|grep -v 2/2| grep -c "")
+        echo "    PODS_NOK_COUNT: $PODS_NOK_COUNT"
+
+
+
+
+        echo ""
+        echo ""
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo " ✅ Check All Pods Running"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+        echo "---------------------------------------------------------------------------------------------------------------------------------------------------"
+
+      ignore_errors: true
+      register: EXEC_RESULT
+    - name: 🟣  OUTPUT - Check All Pods Running
+      debug: 
+        var: EXEC_RESULT.stdout_lines
+        #verbosity: 1
+
+
+
+
+
