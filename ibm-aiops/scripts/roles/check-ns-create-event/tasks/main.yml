@@ -76,7 +76,7 @@
         export PODS_NOK_COUNT=$(oc get pods -n {{ namespace }} --no-headers|grep -v Completed|grep -v Error|grep -v 1/1|grep -v 2/2| grep -c "")
         echo "    PODS_NOK_COUNT: $PODS_NOK_COUNT"
 
-
+        export namespace={{ namespace }}
 
         echo ""
         echo "   ----------------------------------------------------------------------------------------------------------"
@@ -96,7 +96,7 @@
             echo "    📥 Create Event for $pod"
 
             # echo "> [$pod]"
-            currEvent="{\"id\": \"1a2a6787-59ad-4acd-bd0d-1111\",\"occurrenceTime\": \"$my_timestamp\",\"summary\": \"$namespace - Pod Not Ready - $pod\",\"severity\": 1,\"type\": {\"eventType\": \"problem\",\"classification\": \"AppWatch $namespace\"},\"expirySeconds\": 6000000,\"links\": [],\"sender\": {\"type\": \"host\",\"name\": \"AppWatch $namespace\",\"accessScope\": \"KUBERNETES.OBSERVER:local\",\"sourceId\": \"k8s\",\"application\": \"$namespace\"},\"resource\": {\"type\": \"app health\",\"sourceId\": \"AppWatch $namespace\",\"service\": \"$namespace\",\"event\": \"not running\",\"projectName\": \"$namespace\",\"application\": \"$namespace\",\"app_name\": \"$namespace\",\"description\": \"AppWatch $namespace\",\"status\": \"running\",\"name\": \"$resource_prefix$pod$resource_postfix\",\"errormessage\": \"Pod $pod is not Ready.\",\"operationState\": \"Pods not running: $PODS_NOK_COUNT\"},\"details\": {}}"
+            currEvent="{\"id\": \"1a2a6787-59ad-4acd-bd0d-1111\",\"occurrenceTime\": \"$my_timestamp\",\"summary\": \"{{ namespace }} - Pod Not Ready - $pod\",\"severity\": 1,\"type\": {\"eventType\": \"problem\",\"classification\": \"AppWatch {{ namespace }}\"},\"expirySeconds\": 6000000,\"links\": [],\"sender\": {\"type\": \"host\",\"name\": \"AppWatch {{ namespace }}\",\"accessScope\": \"KUBERNETES.OBSERVER:local\",\"sourceId\": \"k8s\",\"application\": \"{{ namespace }}\"},\"resource\": {\"type\": \"app health\",\"sourceId\": \"AppWatch {{ namespace }}\",\"service\": \"{{ namespace }}\",\"event\": \"not running\",\"projectName\": \"{{ namespace }}\",\"application\": \"{{ namespace }}\",\"app_name\": \"{{ namespace }}\",\"description\": \"AppWatch {{ namespace }}\",\"status\": \"running\",\"name\": \"$resource_prefix$pod$resource_postfix\",\"errormessage\": \"Pod $pod is not Ready.\",\"operationState\": \"Pods not running: $PODS_NOK_COUNT\"},\"details\": {}}"
             # echo $currEvent|jq
 
             export c_string=$(echo "curl \"https://$DATALAYER_ROUTE/irdatalayer.aiops.io/active/v1/events\"  --insecure   -X POST -u \"${USER_PASS}\" -H 'Content-Type: application/json' -H 'x-username:admin' -H 'x-subscription-id:cfd95b7e-3bc7-4006-a4a8-a73a79c71255' -d '${currEvent}'")
