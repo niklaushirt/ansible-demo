@@ -10,6 +10,12 @@
       debug: 
         var: k8s_apikey
 
+
+    - name: DEBUG -                 🟢 NAMESPACE
+      debug: 
+        var: namespace
+
+
     - name: OCP Login
       shell: |
         oc login --token={{ my_k8s_apikey }} --server={{ my_k8s_apiurl }} --insecure-skip-tls-verify
@@ -49,12 +55,12 @@
 
         echo ""
         echo "   ----------------------------------------------------------------------------------------------------------"
-        echo "    📥 Check"
+        echo "    📥 Check {{ namespace }}"
         echo "   ----------------------------------------------------------------------------------------------------------"
-        export PODS_NOK=$(oc get pods -n ibm-aiops --no-headers|grep -v Completed|grep -v Error|grep -v 1/1|grep -v 2/2| awk '{print $1}' | tail -n +2| tr "\r" "\n")
+        export PODS_NOK=$(oc get pods -n {{ namespace }} --no-headers|grep -v Completed|grep -v Error|grep -v 1/1|grep -v 2/2| awk '{print $1}' | tail -n +2| tr "\r" "\n")
         echo "    PODS_NOK: $PODS_NOK"
 
-        export PODS_NOK_COUNT=$(oc get pods -n ibm-aiops --no-headers|grep -v Completed|grep -v Error|grep -v 1/1|grep -v 2/2| grep -c "")
+        export PODS_NOK_COUNT=$(oc get pods -n {{ namespace }} --no-headers|grep -v Completed|grep -v Error|grep -v 1/1|grep -v 2/2| grep -c "")
         echo "    PODS_NOK_COUNT: $PODS_NOK_COUNT"
 
 
