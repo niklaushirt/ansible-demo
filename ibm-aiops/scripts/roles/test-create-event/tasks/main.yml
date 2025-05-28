@@ -5,10 +5,29 @@
       debug: 
         var: k8s_apiurl
 
-
     - name: DEBUG -                 🟢 API KEY
       debug: 
         var: k8s_apikey
+
+    - name: DEBUG -                 🟢 NAMESPACE
+      debug: 
+        var: resource_namespace
+
+    - name: DEBUG -                 🟢 resource_prefix
+      debug: 
+        var: resource_prefix
+
+    - name: DEBUG -                 🟢 resource_postfix
+      debug: 
+        var: resource_postfix
+
+    - name: DEBUG -                 🟢 resource_test_name
+      debug: 
+        var: resource_test_name
+
+
+
+
 
     - name: OCP Login
       shell: |
@@ -19,6 +38,8 @@
       debug: 
         var: EXEC_RESULT.stdout_lines
         #verbosity: 1
+
+
 
 
 
@@ -39,15 +60,16 @@
         echo "   ----------------------------------------------------------------------------------------------------------"
         export AIOPS_NAMESPACE=$(oc get po -A|grep aiops-orchestrator-controller |awk '{print$1}')
         export DATALAYER_ROUTE=$(oc get route  -n $AIOPS_NAMESPACE datalayer-api  -o jsonpath='{.status.ingress[0].host}')
+        export CONSOLE_ROUTE=$(oc get route  -n openshift-console console  -o jsonpath='{.status.ingress[0].host}')
         export USER_PASS="$(oc get secret aiops-ir-core-ncodl-api-secret -n $AIOPS_NAMESPACE -o jsonpath='{.data.username}' | base64 --decode):$(oc get secret -n $AIOPS_NAMESPACE aiops-ir-core-ncodl-api-secret -o jsonpath='{.data.password}' | base64 --decode)"
 
         echo "       ✅ AIOPS_NAMESPACE:    $AIOPS_NAMESPACE"
         echo "       ✅ USER_PASS:          $USER_PASS"
         echo "       ✅ DATALAYER_ROUTE:    $DATALAYER_ROUTE"
+        echo "       ✅ CONSOLE_ROUTE:      $CONSOLE_ROUTE"
 
 
-
-
+        export namespace={{ resource_namespace }}
 
         echo ""
         echo "   ----------------------------------------------------------------------------------------------------------"
@@ -58,12 +80,10 @@
         export my_timestamp=$(date $EVENTS_SECONDS_SKEW $DATE_FORMAT_EVENTS)".000Z"
         echo "       ✅ my_timestamp:    $my_timestamp"
 
-        export pod=aiops-topology-cassandra-0
 
-        echo "    📥 Create Test Event for $pod"
+        echo "    📥 Create Event for {{ my_k8s_apikey }}"
 
-        # echo "> [$pod]"
-        currEvent="{\"id\": \"1a2a6787-59ad-4acd-bd0d-1111\",\"occurrenceTime\": \"$my_timestamp\",\"summary\": \"AIOPS - Pod Not Ready - $pod\",\"severity\": 1,\"type\": {\"eventType\": \"problem\",\"classification\": \"AIOPS\"},\"expirySeconds\": 6000000,\"links\": [],\"sender\": {\"type\": \"host\",\"name\": \"AIOPS Watchdog\",\"accessScope\": \"KUBERNETES.OBSERVER:local\",\"sourceId\": \"k8s\",\"application\": \"aiops\"},\"resource\": {\"type\": \"aiops\",\"sourceId\": \"aiops\",\"service\": \"aiops\",\"event\": \"not running\",\"projectName\": \"aiops\",\"application\": \"aiops\",\"app_name\": \"aiops\",\"description\": \"AIOps\",\"status\": \"running\",\"name\": \"$pod\",\"errormessage\": \"Pod $pod is not Ready.\",\"operationState\": \"Pods not running: $PODS_NOK_COUNT\"},\"details\": {}}"
+        currEvent="{\"id\": \"1a2a6787-59ad-4acd-bd0d-1111\",\"occurrenceTime\": \"$my_timestamp\",\"summary\": \"{{ resource_namespace }} - Pod Not Ready - {{ my_k8s_apikey }}\",\"severity\": {{resource_severity}},\"type\": {\"eventType\": \"problem\",\"classification\": \"AppWatch\"},\"expirySeconds\": 6000000,\"links\": [{"linkType": "webpage","name": "Inspect {{ resource_namespace }} - {{ my_k8s_apikey }}","description": "Inspect {{ resource_namespace }} - {{ my_k8s_apikey }}","url": "https://$CONSOLE_ROUTE/k8s/ns/{{ resource_namespace }}/deployments/{{ my_k8s_apikey }}"}],\"sender\": {\"type\": \"host\",\"name\": \"AppWatch {{ resource_namespace }}\",\"accessScope\": \"KUBERNETES.OBSERVER:local\",\"sourceId\": \"k8s\",\"application\": \"{{ resource_namespace }}\"},\"resource\": {\"type\": \"app health\",\"sourceId\": \"AppWatch {{ resource_namespace }}\",\"service\": \"{{ resource_namespace }}\",\"event\": \"not running\",\"projectName\": \"{{ resource_namespace }}\",\"application\": \"{{ resource_namespace }}\",\"app_name\": \"{{ resource_namespace }}\",\"description\": \"AppWatch {{ resource_namespace }}\",\"status\": \"running\",\"name\": \"{{ resource_prefix }}{{ my_k8s_apikey }}{{ resource_postfix }}\",\"errormessage\": \"Pod {{ my_k8s_apikey }} is not Ready.\",\"operationState\": \"Pods not running: {{ my_k8s_apikey }}S_NOK_COUNT\"},\"details\": {}}"
         # echo $currEvent|jq
 
         export c_string=$(echo "curl \"https://$DATALAYER_ROUTE/irdatalayer.aiops.io/active/v1/events\"  --insecure   -X POST -u \"${USER_PASS}\" -H 'Content-Type: application/json' -H 'x-username:admin' -H 'x-subscription-id:cfd95b7e-3bc7-4006-a4a8-a73a79c71255' -d '${currEvent}'")
@@ -72,7 +92,6 @@
         myId=$(echo $result|jq ".deduplicationKey")
         echo "       DONE:$myId"
         #echo "       DONE:$result"
-
 
 
 

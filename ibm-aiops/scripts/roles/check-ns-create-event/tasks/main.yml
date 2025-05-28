@@ -5,26 +5,24 @@
       debug: 
         var: k8s_apiurl
 
-
     - name: DEBUG -                 🟢 API KEY
       debug: 
         var: k8s_apikey
-
 
     - name: DEBUG -                 🟢 NAMESPACE
       debug: 
         var: resource_namespace
 
-
     - name: DEBUG -                 🟢 resource_prefix
       debug: 
         var: resource_prefix
 
-
-
     - name: DEBUG -                 🟢 resource_postfix
       debug: 
         var: resource_postfix
+
+
+
 
 
     - name: OCP Login
@@ -36,6 +34,8 @@
       debug: 
         var: EXEC_RESULT.stdout_lines
         #verbosity: 1
+
+
 
 
 
@@ -86,8 +86,6 @@
         export DATE_FORMAT_EVENTS="+%Y-%m-%dT%H:%M:%S"
         export my_timestamp=$(date $EVENTS_SECONDS_SKEW $DATE_FORMAT_EVENTS)".000Z"
         echo "       ✅ my_timestamp:    $my_timestamp"
-
-
 
 
         PODS_NOK=( $( echo $PODS_NOK ) )
