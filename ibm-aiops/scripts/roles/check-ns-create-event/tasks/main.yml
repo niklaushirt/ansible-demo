@@ -56,11 +56,13 @@
         echo "   ----------------------------------------------------------------------------------------------------------"
         export AIOPS_NAMESPACE=$(oc get po -A|grep aiops-orchestrator-controller |awk '{print$1}')
         export DATALAYER_ROUTE=$(oc get route  -n $AIOPS_NAMESPACE datalayer-api  -o jsonpath='{.status.ingress[0].host}')
+        export CONSOLE_ROUTE=$(oc get route  -n openshift-console console  -o jsonpath='{.status.ingress[0].host}')
         export USER_PASS="$(oc get secret aiops-ir-core-ncodl-api-secret -n $AIOPS_NAMESPACE -o jsonpath='{.data.username}' | base64 --decode):$(oc get secret -n $AIOPS_NAMESPACE aiops-ir-core-ncodl-api-secret -o jsonpath='{.data.password}' | base64 --decode)"
 
         echo "       ✅ AIOPS_NAMESPACE:    $AIOPS_NAMESPACE"
         echo "       ✅ USER_PASS:          $USER_PASS"
         echo "       ✅ DATALAYER_ROUTE:    $DATALAYER_ROUTE"
+        echo "       ✅ CONSOLE_ROUTE:      $CONSOLE_ROUTE"
 
 
 
@@ -94,7 +96,7 @@
             echo "    📥 Create Event for $pod"
 
             # echo "> [$pod]"
-            currEvent="{\"id\": \"1a2a6787-59ad-4acd-bd0d-1111\",\"occurrenceTime\": \"$my_timestamp\",\"summary\": \"{{ resource_namespace }} - Pod Not Ready - $pod\",\"severity\": {{resource_severity}},\"type\": {\"eventType\": \"problem\",\"classification\": \"AppWatch\"},\"expirySeconds\": 6000000,\"links\": [],\"sender\": {\"type\": \"host\",\"name\": \"AppWatch {{ resource_namespace }}\",\"accessScope\": \"KUBERNETES.OBSERVER:local\",\"sourceId\": \"k8s\",\"application\": \"{{ resource_namespace }}\"},\"resource\": {\"type\": \"app health\",\"sourceId\": \"AppWatch {{ resource_namespace }}\",\"service\": \"{{ resource_namespace }}\",\"event\": \"not running\",\"projectName\": \"{{ resource_namespace }}\",\"application\": \"{{ resource_namespace }}\",\"app_name\": \"{{ resource_namespace }}\",\"description\": \"AppWatch {{ resource_namespace }}\",\"status\": \"running\",\"name\": \"{{ resource_prefix }}$pod{{ resource_postfix }}\",\"errormessage\": \"Pod $pod is not Ready.\",\"operationState\": \"Pods not running: $PODS_NOK_COUNT\"},\"details\": {}}"
+            currEvent="{\"id\": \"1a2a6787-59ad-4acd-bd0d-1111\",\"occurrenceTime\": \"$my_timestamp\",\"summary\": \"{{ resource_namespace }} - Pod Not Ready - $pod\",\"severity\": {{resource_severity}},\"type\": {\"eventType\": \"problem\",\"classification\": \"AppWatch\"},\"expirySeconds\": 6000000,\"links\": [{"linkType": "webpage","name": "Inspect {{ resource_namespace }} - $pod","description": "Inspect {{ resource_namespace }} - $pod","url": "https://$CONSOLE_ROUTE/k8s/ns/{{ resource_namespace }}/deployments/$pod"}],\"sender\": {\"type\": \"host\",\"name\": \"AppWatch {{ resource_namespace }}\",\"accessScope\": \"KUBERNETES.OBSERVER:local\",\"sourceId\": \"k8s\",\"application\": \"{{ resource_namespace }}\"},\"resource\": {\"type\": \"app health\",\"sourceId\": \"AppWatch {{ resource_namespace }}\",\"service\": \"{{ resource_namespace }}\",\"event\": \"not running\",\"projectName\": \"{{ resource_namespace }}\",\"application\": \"{{ resource_namespace }}\",\"app_name\": \"{{ resource_namespace }}\",\"description\": \"AppWatch {{ resource_namespace }}\",\"status\": \"running\",\"name\": \"{{ resource_prefix }}$pod{{ resource_postfix }}\",\"errormessage\": \"Pod $pod is not Ready.\",\"operationState\": \"Pods not running: $PODS_NOK_COUNT\"},\"details\": {}}"
             # echo $currEvent|jq
 
             export c_string=$(echo "curl \"https://$DATALAYER_ROUTE/irdatalayer.aiops.io/active/v1/events\"  --insecure   -X POST -u \"${USER_PASS}\" -H 'Content-Type: application/json' -H 'x-username:admin' -H 'x-subscription-id:cfd95b7e-3bc7-4006-a4a8-a73a79c71255' -d '${currEvent}'")
