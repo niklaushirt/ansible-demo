@@ -18,6 +18,10 @@
     - name: resource_postfix
       set_fact:
         resource_postfix: "{{resource_postfix}}"
+    - name: resource_severity
+      set_fact:
+        resource_severity: "{{resource_severity}}"
+
 
     - name: validate_certs
       set_fact:
