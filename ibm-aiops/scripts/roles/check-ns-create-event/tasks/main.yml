@@ -57,7 +57,7 @@
         echo "   ----------------------------------------------------------------------------------------------------------"
         echo "    📥 Check {{ namespace }}"
         echo "   ----------------------------------------------------------------------------------------------------------"
-        export PODS_NOK=$(oc get pods -n {{ namespace }} --no-headers|grep -v Completed|grep -v Error|grep -v 1/1|grep -v 2/2| awk '{print $1}' | tail -n +2| tr "\r" "\n")
+        export PODS_NOK=$(oc get pods -n {{ namespace }} --no-headers|grep -v Completed|grep -v Error|grep -v 1/1|grep -v 2/2| awk '{print $1}' | cut -d "-" -f 1 | tr "\r" "\n")
         echo "    PODS_NOK: $PODS_NOK"
 
         export PODS_NOK_COUNT=$(oc get pods -n {{ namespace }} --no-headers|grep -v Completed|grep -v Error|grep -v 1/1|grep -v 2/2| grep -c "")
