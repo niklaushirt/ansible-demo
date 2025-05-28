@@ -12,6 +12,13 @@
     - name: namespace
       set_fact:
         namespace: "{{namespace}}"
+    - name: resource-prefix
+      set_fact:
+        resource-prefix: "{{resource-prefix}}"
+    - name: resource-postfix
+      set_fact:
+        resource-postfix: "{{resource-postfix}}"
+
     - name: validate_certs
       set_fact:
         validate_certs: "no"

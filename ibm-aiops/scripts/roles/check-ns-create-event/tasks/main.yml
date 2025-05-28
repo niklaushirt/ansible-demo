@@ -15,6 +15,16 @@
       debug: 
         var: namespace
 
+    - name: DEBUG -                 🟢 resource-prefix
+      debug: 
+        var: resource-prefix
+
+    - name: DEBUG -                 🟢 resource-postfix
+      debug: 
+        var: resource-postfix
+
+
+
 
     - name: OCP Login
       shell: |
@@ -83,7 +93,7 @@
             echo "    📥 Create Event for $pod"
 
             # echo "> [$pod]"
-            currEvent="{\"id\": \"1a2a6787-59ad-4acd-bd0d-1111\",\"occurrenceTime\": \"$my_timestamp\",\"summary\": \"AIOPS - Pod Not Ready - $pod\",\"severity\": 1,\"type\": {\"eventType\": \"problem\",\"classification\": \"AIOPS\"},\"expirySeconds\": 6000000,\"links\": [],\"sender\": {\"type\": \"host\",\"name\": \"AIOPS Watchdog\",\"accessScope\": \"KUBERNETES.OBSERVER:local\",\"sourceId\": \"k8s\",\"application\": \"aiops\"},\"resource\": {\"type\": \"aiops\",\"sourceId\": \"aiops\",\"service\": \"aiops\",\"event\": \"not running\",\"projectName\": \"aiops\",\"application\": \"aiops\",\"app_name\": \"aiops\",\"description\": \"AIOps\",\"status\": \"running\",\"name\": \"$pod\",\"errormessage\": \"Pod $pod is not Ready.\",\"operationState\": \"Pods not running: $PODS_NOK_COUNT\"},\"details\": {}}"
+            currEvent="{\"id\": \"1a2a6787-59ad-4acd-bd0d-1111\",\"occurrenceTime\": \"$my_timestamp\",\"summary\": \"AIOPS - Pod Not Ready - $pod\",\"severity\": 1,\"type\": {\"eventType\": \"problem\",\"classification\": \"AIOPS\"},\"expirySeconds\": 6000000,\"links\": [],\"sender\": {\"type\": \"host\",\"name\": \"AIOPS Watchdog\",\"accessScope\": \"KUBERNETES.OBSERVER:local\",\"sourceId\": \"k8s\",\"application\": \"aiops\"},\"resource\": {\"type\": \"aiops\",\"sourceId\": \"aiops\",\"service\": \"aiops\",\"event\": \"not running\",\"projectName\": \"aiops\",\"application\": \"aiops\",\"app_name\": \"aiops\",\"description\": \"AIOps\",\"status\": \"running\",\"name\": \"$resource-prefix$pod$resource-postfix\",\"errormessage\": \"Pod $pod is not Ready.\",\"operationState\": \"Pods not running: $PODS_NOK_COUNT\"},\"details\": {}}"
             # echo $currEvent|jq
 
             export c_string=$(echo "curl \"https://$DATALAYER_ROUTE/irdatalayer.aiops.io/active/v1/events\"  --insecure   -X POST -u \"${USER_PASS}\" -H 'Content-Type: application/json' -H 'x-username:admin' -H 'x-subscription-id:cfd95b7e-3bc7-4006-a4a8-a73a79c71255' -d '${currEvent}'")
