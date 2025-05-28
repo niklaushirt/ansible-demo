@@ -9,9 +9,9 @@
     - name: k8s_apiurl
       set_fact:
         k8s_apiurl: "{{my_k8s_apiurl}}"
-    - name: namespace
+    - name: resource_namespace
       set_fact:
-        namespace: "{{namespace}}"
+        resource_namespace: "{{resource_namespace}}"
     - name: resource_prefix
       set_fact:
         resource_prefix: "{{resource_prefix}}"
